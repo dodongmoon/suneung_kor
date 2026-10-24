@@ -1,10 +1,12 @@
-import {categories} from './catalog.js';
-import {initialState, nextQuestion, restoreState} from './engine.js';
+import {categories} from './catalog.js?v=suwan-1';
+import {initialState, nextQuestion, restoreState} from './engine.js?v=suwan-1';
 
 export const storageKeys = {
   // Preserve the original storage key so existing modern-poetry records remain available.
   modern: 'sutek-poem-loop-v1',
   classical: 'sutek-poem-loop-classical-v1',
+  'suwan-modern': 'suwan-poem-loop-modern-v1',
+  'suwan-classical': 'suwan-poem-loop-classical-v1',
 };
 const activeKey = 'sutek-poem-loop-section';
 export function loadProgress(storage) {

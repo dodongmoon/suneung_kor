@@ -1,4 +1,4 @@
-import {pageImages} from './page-images.js';
+import {pageImages} from './page-images.js?v=suwan-1';
 // Each file contains only this work, including its continuation and notes pages.
 const pageCounts = {
   "modern": [
@@ -66,6 +66,33 @@ const pageCounts = {
     1,
     1,
     1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "suwan-modern": [
+    1,
+    1,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "suwan-classical": [
+    5,
+    2,
+    8,
+    2,
     1,
     1,
     1,

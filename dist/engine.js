@@ -1,4 +1,4 @@
-import { categories, getPoems } from './catalog.js';
+import { categories, getPoems } from './catalog.js?v=suwan-1';
 export function shuffle(items, random = Math.random) {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {

@@ -17,7 +17,7 @@ test('every work opens its own existing PDF from page one', () => {
       assert.ok(sourcePageCount(poem) >= 1);
     }
   }
-  assert.equal(urls.size, 69);
+  assert.equal(urls.size, 92);
   const classical = getPoems('classical');
   assert.equal(sourcePageCount(classical.find(p => p.title === '성패관천운')), 1);
   assert.equal(sourcePageCount(classical.find(p => p.title === '면앙정가')), 3);
@@ -40,5 +40,5 @@ test('every work has a complete set of separate page images', () => {
       }
     }
   }
-  assert.equal(paths.size, 113);
+  assert.equal(paths.size, 150);
 });

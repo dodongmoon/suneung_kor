@@ -4,26 +4,32 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5f0">
-  <meta name="description" content="작가와 제목을 보고 주제를 떠올려 보세요. 2027 수특 현대시·고전시가를 섹션별 3지선다와 5지선다로 반복 학습합니다.">
-  <title>시의 주제 · 2027 수특 현대시·고전시가</title>
+  <meta name="description" content="2027 수능특강·수능완성의 현대시와 고전시가 92편. 교재와 갈래를 골라 주제를 반복 학습하고 작품별 본문을 확인하세요.">
+  <title>시의 주제 · 2027 수능특강·수능완성</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ae4b32'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='white'%3E시%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css?v=20261024-pages">
-  <script type="module" src="./app.js?v=20261024-pages"></script>
+  <link rel="stylesheet" href="./style.css?v=20261024-suwan">
+  <script type="module" src="./app.js?v=20261024-suwan"></script>
 </head>
 <body>
   <a class="skip" href="#study">문제로 바로 가기</a>
   <header class="site-header">
     <a class="brand" href="./" aria-label="시의 주제 홈"><span class="brand-mark" aria-hidden="true">시</span><span>시의 주제<span class="brand-sub">반복하면, 기억이 된다</span></span></a>
-    <div class="header-actions"><span class="edition">2027 수능특강 · 현대시와 고전시가</span><button id="library-open" class="text-button">작품 모아보기 <span aria-hidden="true">↗</span></button></div>
+    <div class="header-actions"><span class="edition">2027 수능특강 · 수능완성</span><button id="library-open" class="text-button">작품 모아보기 <span aria-hidden="true">↗</span></button></div>
   </header>
   <main id="study" tabindex="-1">
     <div class="intro"><div class="eyebrow"><span class="tiny-dot"></span><span id="intro-category">매일 조금씩, 현대시 36편</span></div><h1>한 편씩, 확실하게.</h1><p>제목을 보고 떠오르는 주제를 골라 보세요.</p></div>
+    <div class="book-bar">
+      <fieldset class="book-picker section-picker"><legend class="visually-hidden">학습 교재</legend>
+        <label for="book-sutek"><input id="book-sutek" type="radio" name="book" value="sutek" checked><span>수능특강 <small>69편</small></span></label>
+        <label for="book-suwan"><input id="book-suwan" type="radio" name="book" value="suwan"><span>수능완성 <small>23편</small></span></label>
+      </fieldset>
+    </div>
     <div class="section-bar">
       <fieldset class="section-picker"><legend class="visually-hidden">학습 섹션</legend>
         <label for="section-modern"><input id="section-modern" type="radio" name="section" value="modern" checked><span>현대시 <small id="section-modern-count">36편</small></span></label>
         <label for="section-classical"><input id="section-classical" type="radio" name="section" value="classical"><span>고전시가 <small id="section-classical-count">33편</small></span></label>
       </fieldset>
-      <p class="section-note">문제와 선지, 학습 기록은 섹션별로 나뉘어요.</p>
+      <p class="section-note">문제와 선지, 학습 기록은 교재·갈래별로 나뉘어요.</p>
     </div>
     <p id="section-status" class="visually-hidden" role="status" aria-live="polite"></p>
     <div class="workspace">

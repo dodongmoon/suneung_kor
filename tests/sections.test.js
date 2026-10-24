@@ -23,7 +23,7 @@ test('both choice counts draw exclusively from the question category with unique
   for (const category of categories) {
     const poems = getPoems(category);
     const themes = new Set(poems.map(p => p.theme));
-    const foreign = new Set(getPoems(category === 'modern' ? 'classical' : 'modern').map(p=>p.theme));
+    const foreign = new Set(categories.filter(c=>c!==category).flatMap(c=>getPoems(c).map(p=>p.theme)).filter(t=>!themes.has(t)));
     for (const count of [3,5]) for (const poem of poems) for (let n=0;n<25;n++) {
       const options=makeOptions(poem,count);
       assert.equal(options.length,count);

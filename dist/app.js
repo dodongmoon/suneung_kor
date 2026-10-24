@@ -1,7 +1,7 @@
-import {categories, sections, getPoems, sourceLabel} from './catalog.js';
-import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js';
-import {loadProgress, activateSection, saveProgress} from './progress.js';
-import {sourceDocument, sourcePageCount, sourceImages} from './sources.js?v=pages-1';
+import {books, genres, sections, categoryFor, sectionTitle, getPoems, sourceLabel} from './catalog.js?v=suwan-1';
+import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js?v=suwan-1';
+import {loadProgress, activateSection, saveProgress} from './progress.js?v=suwan-1';
+import {sourceDocument, sourcePageCount, sourceImages} from './sources.js?v=suwan-1';
 const $ = id => document.getElementById(id);
 let storage;
 try {storage = window.localStorage;} catch {}
@@ -19,19 +19,23 @@ function element(tag, text, className) {
   return el;
 }
 function render() {
-  const label = sections[progress.active].label;
+  const section = sections[progress.active];
+  const label = sectionTitle(progress.active);
   document.documentElement.dataset.category = progress.active;
-  document.title = `시의 주제 · 2027 수특 ${label}`;
+  document.title = `시의 주제 · 2027 ${label}`;
   $('intro-category').textContent = `매일 조금씩, ${label} ${poems.length}편`;
   $('stats-category').textContent = `${label} 학습 기록`;
-  $('footer-source').textContent = `2027 KBS 수특 ${label} 손필기 · ${poems.length}편`;
+  $('footer-source').textContent = `2027 KBS ${label} 손필기 · ${poems.length}편`;
   $('library-heading').textContent = `${label} 모아보기`;
   $('library-count').textContent = poems.length;
   $('reset-title').textContent = `${label} 기록을 초기화할까요?`;
   $('reset-description').textContent = `${label}의 풀이 수, 정답률, 오답 목록과 반복 진도만 초기화됩니다.`;
-  for (const category of categories) {
-    $(`section-${category}`).checked = category === progress.active;
-    $(`section-${category}-count`).textContent = `${getPoems(category).length}편`;
+  for (const book of Object.keys(books)) {
+    $(`book-${book}`).checked = book === section.book;
+  }
+  for (const genre of genres) {
+    $(`section-${genre}`).checked = genre === section.genre;
+    $(`section-${genre}-count`).textContent = `${getPoems(categoryFor(section.book, genre)).length}편`;
   }
   $('stat-total').textContent = state.total.toLocaleString();
   $('stat-rate').textContent = state.total ? `${Math.round(state.correct / state.total * 100)}%` : '—';
@@ -102,14 +106,20 @@ $('next').addEventListener('click', next);
 $('mode-all').addEventListener('click', () => setMode('all'));
 $('mode-wrong').addEventListener('click', () => setMode('wrong'));
 $('back-all').addEventListener('click', () => setMode('all'));
-document.querySelectorAll('[name="section"]').forEach(input => input.addEventListener('change', () => {
+function setSection(category) {
   save();
-  activateSection(progress, input.value);
+  activateSection(progress, category);
   state = progress.states[progress.active];
   poems = getPoems(progress.active);
   $('search').value = '';
   render();
-  $('section-status').textContent = `${sections[progress.active].label} ${poems.length}편으로 전환했습니다. 문제와 선지는 이 섹션에서만 나옵니다.`;
+  $('section-status').textContent = `${sectionTitle(progress.active)} ${poems.length}편으로 전환했습니다. 문제와 선지는 이 교재와 갈래에서만 나옵니다.`;
+}
+document.querySelectorAll('[name="book"]').forEach(input => input.addEventListener('change', () => {
+  setSection(categoryFor(input.value, sections[progress.active].genre));
+}));
+document.querySelectorAll('[name="section"]').forEach(input => input.addEventListener('change', () => {
+  setSection(categoryFor(sections[progress.active].book, input.value));
 }));
 document.querySelectorAll('[name="count"]').forEach(input => input.addEventListener('change', () => {
   state.count = Number(input.value);
