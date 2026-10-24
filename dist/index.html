@@ -5,15 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f5f0">
   <meta name="description" content="2027 수능특강·수능완성의 현대시와 고전시가 92편. 교재와 갈래를 골라 주제를 반복 학습하고 작품별 본문을 확인하세요.">
-  <title>시의 주제 · 2027 수능특강·수능완성</title>
+  <title>돼연 특강 · 2027 수능특강·수능완성</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ae4b32'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='white'%3E시%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css?v=20261024-sequence">
-  <script type="module" src="./app.js?v=20261024-sequence"></script>
+  <link rel="stylesheet" href="./style.css?v=20261024-brand">
+  <script type="module" src="./app.js?v=20261024-brand"></script>
 </head>
 <body>
   <a class="skip" href="#study">문제로 바로 가기</a>
   <header class="site-header">
-    <a class="brand" href="./" aria-label="시의 주제 홈"><span class="brand-mark" aria-hidden="true">시</span><span>시의 주제<span class="brand-sub">반복하면, 기억이 된다</span></span></a>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">시</span>
+      <div class="brand-copy"><a href="./" aria-label="돼연 특강 홈">돼연 특강</a><button id="quote-open" class="brand-sub" aria-label="문구 전문 보기" aria-haspopup="dialog" aria-controls="quote-dialog"><span>싸움하는 사람은 즉 싸움하지 아니하던 사람이고 또 싸움하는 사람은 싸움하지 아니하는 사람이었기도 하니까 싸움하는 사람이 싸움하는 구경을 하고 싶거든 싸움하지 아니하던 사람이 싸움하는 것을 구경하든지 싸움하지 아니하는 사람이 싸움하는 구경을 하든지 싸움하지 아니하던 사람이나 싸움하지 아니하는 사람이 싸움하지 아니하는 것을 구경하든지 하였으면 그만이다</span><span class="quote-expand" aria-hidden="true">↗</span></button></div>
+    </div>
     <div class="header-actions"><span class="edition">2027 수능특강 · 수능완성</span><button id="library-open" class="text-button">작품 모아보기 <span aria-hidden="true">↗</span></button></div>
   </header>
   <main id="study" tabindex="-1">
@@ -60,6 +63,10 @@
     </div>
   </main>
   <footer class="site-footer"><span id="footer-source">2027 KBS 수특 현대시 손필기 · 36편</span><span id="save-status">학습 기록은 이 브라우저에 자동 저장돼요.</span></footer>
+  <dialog id="quote-dialog" aria-labelledby="quote-title">
+    <div class="dialog-top"><h2 id="quote-title">전문 보기</h2><button id="quote-close" class="close-button" aria-label="전문 닫기" autofocus>×</button></div>
+    <p class="full-quote">싸움하는 사람은 즉 싸움하지 아니하던 사람이고 또 싸움하는 사람은 싸움하지 아니하는 사람이었기도 하니까 싸움하는 사람이 싸움하는 구경을 하고 싶거든 싸움하지 아니하던 사람이 싸움하는 것을 구경하든지 싸움하지 아니하는 사람이 싸움하는 구경을 하든지 싸움하지 아니하던 사람이나 싸움하지 아니하는 사람이 싸움하지 아니하는 것을 구경하든지 하였으면 그만이다</p>
+  </dialog>
   <dialog id="library" aria-labelledby="library-title"><div class="dialog-top"><div><p class="eyebrow">나만의 작은 작품 목록</p><h2 id="library-title"><span id="library-heading">현대시 모아보기</span> <small id="library-count">36</small></h2></div><button class="close-button" id="library-close" aria-label="작품 목록 닫기">×</button></div><label for="search">제목·작가·주제 검색</label><input id="search" type="search" placeholder="어떤 작품을 찾고 있나요?" autocomplete="off"><div id="library-list"></div></dialog>
   <dialog id="wrong-list" aria-labelledby="wrong-list-title"><div class="dialog-top"><div><p class="eyebrow" id="wrong-list-category"></p><h2 id="wrong-list-title">틀린 문제 모아보기 <small id="wrong-list-total">0</small></h2></div><button id="wrong-list-close" class="close-button" aria-label="틀린 문제 목록 닫기">×</button></div><p class="wrong-list-note">작품을 펼치면 내 선택과 정답을 확인할 수 있어요. 다시 맞힌 작품은 목록에서 빠집니다.</p><div id="wrong-list-items"></div><div class="dialog-buttons"><button id="wrong-list-start" class="primary">오답만 풀기 →</button></div></dialog>
   <dialog id="body-dialog" aria-labelledby="body-title" aria-describedby="body-source">

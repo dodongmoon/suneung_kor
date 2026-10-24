@@ -22,7 +22,7 @@ function render() {
   const section = sections[progress.active];
   const label = sectionTitle(progress.active);
   document.documentElement.dataset.category = progress.active;
-  document.title = `시의 주제 · 2027 ${label}`;
+  document.title = `돼연 특강 · 2027 ${label}`;
   $('intro-category').textContent = `매일 조금씩, ${label} ${poems.length}편`;
   $('stats-category').textContent = `${label} 학습 기록`;
   $('footer-source').textContent = `2027 KBS ${label} 손필기 · ${poems.length}편`;
@@ -240,6 +240,8 @@ $('body-dialog').addEventListener('close', () => {
   $('body-viewer').replaceChildren();
   if (bodyReturnFocus?.isConnected) bodyReturnFocus.focus({preventScroll:true});
 });
+$('quote-open').addEventListener('click', () => $('quote-dialog').showModal());
+$('quote-close').addEventListener('click', () => $('quote-dialog').close());
 $('reset-open').addEventListener('click', () => $('reset-dialog').showModal());
 $('reset-cancel').addEventListener('click', () => $('reset-dialog').close());
 $('reset-confirm').addEventListener('click', () => {
