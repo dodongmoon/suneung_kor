@@ -7,8 +7,8 @@
   <meta name="description" content="2027 수능특강·수능완성의 현대시와 고전시가 92편. 교재와 갈래를 골라 주제를 반복 학습하고 작품별 본문을 확인하세요.">
   <title>시의 주제 · 2027 수능특강·수능완성</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ae4b32'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='white'%3E시%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css?v=20261024-suwan">
-  <script type="module" src="./app.js?v=20261024-suwan"></script>
+  <link rel="stylesheet" href="./style.css?v=20261024-sequence">
+  <script type="module" src="./app.js?v=20261024-sequence"></script>
 </head>
 <body>
   <a class="skip" href="#study">문제로 바로 가기</a>
@@ -39,7 +39,7 @@
         <div class="stat-pair"><div><span>정답률</span><strong id="stat-rate">—</strong></div><div><span>연속 정답</span><strong><span id="stat-streak">0</span><small> 회</small></strong></div></div>
         <div class="round-heading"><span id="round-label">1번째 반복</span><span id="round-progress">0 / 36</span></div>
         <div id="progress-dots" class="progress-dots" aria-hidden="true"></div>
-        <p class="side-note" id="round-note">36편을 한 번씩 풀면<br>다시 섞어서 이어집니다.</p>
+        <p class="side-note" id="round-note">1번부터 순서대로 풀고<br>다시 1번부터 이어집니다.</p>
         <div class="sidebar-bottom"><span class="loop-icon" aria-hidden="true">∞</span><p>서두르지 않아도 괜찮아요.<br>한 번 더 만나면 익숙해져요.</p></div>
         <button class="reset-link" id="reset-open">학습 기록 초기화</button>
       </aside>
@@ -48,19 +48,20 @@
           <div class="mode-group" aria-label="학습 모드"><button id="mode-all" aria-pressed="true">전체 반복</button><button id="mode-wrong" aria-pressed="false">오답 복습 <span id="wrong-count">0</span></button></div>
           <fieldset class="count-group"><legend class="visually-hidden">선지 개수</legend><label for="count-3"><input id="count-3" type="radio" name="count" value="3" checked><span>3지선다</span></label><label for="count-5"><input id="count-5" type="radio" name="count" value="5"><span>5지선다</span></label></fieldset>
         </div>
+        <div class="reading-toolbar"><button id="wrong-list-open" class="body-button" aria-haspopup="dialog">틀린 문제 모아보기 <span id="wrong-list-count">0</span></button><button id="body-open" class="body-button" aria-haspopup="dialog">본문 보기 <span aria-hidden="true">↗</span></button></div>
         <div id="question-content">
-          <div class="reading-toolbar"><span>기억이 가물가물할 때</span><button id="body-open" class="body-button" aria-haspopup="dialog">본문 보기 <span aria-hidden="true">↗</span></button></div>
           <div class="poem-card"><div class="card-meta"><span>이 작품의 주제는 무엇일까요?</span><span id="poem-number">01</span></div><div class="poem-heading"><p id="poem-author"></p><h2 id="poem-title" tabindex="-1"></h2></div><div class="card-bottom"><span>작가와 제목으로 떠올려 보기</span><span aria-hidden="true">✳</span></div></div>
           <div id="options" class="options" role="group" aria-label="주제 선택"></div>
           <div id="feedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
-          <div class="question-bottom"><span id="keyboard-hint">숫자키 <kbd>1</kbd>–<kbd id="key-count">3</kbd>으로도 선택할 수 있어요</span><button id="next" class="primary" disabled>다음 문제 <span aria-hidden="true">→</span></button></div>
+          <div class="question-bottom"><span id="keyboard-hint">숫자키 <kbd>1</kbd>–<kbd id="key-count">3</kbd>으로도 선택할 수 있어요</span><div class="question-nav"><button id="previous" class="body-button" disabled><span aria-hidden="true">←</span> 이전 문제</button><button id="next" class="primary" disabled>다음 문제 <span aria-hidden="true">→</span></button></div></div>
         </div>
-        <div id="empty-state" class="empty-state" hidden><span aria-hidden="true">✓</span><h2>복습할 오답이 없어요.</h2><p>틀린 작품은 여기에 모이고,<br>다시 맞히면 복습 목록에서 사라져요.</p><button id="back-all" class="primary">전체 반복 계속하기 →</button></div>
+        <div id="empty-state" class="empty-state" hidden><span aria-hidden="true">✓</span><h2>복습할 오답이 없어요.</h2><p>틀린 작품은 여기에 모이고,<br>다시 맞히면 복습 목록에서 사라져요.</p><div class="empty-actions"><button id="empty-previous" class="body-button" hidden>← 이전 문제</button><button id="back-all" class="primary">전체 반복 계속하기 →</button></div></div>
       </section>
     </div>
   </main>
   <footer class="site-footer"><span id="footer-source">2027 KBS 수특 현대시 손필기 · 36편</span><span id="save-status">학습 기록은 이 브라우저에 자동 저장돼요.</span></footer>
   <dialog id="library" aria-labelledby="library-title"><div class="dialog-top"><div><p class="eyebrow">나만의 작은 작품 목록</p><h2 id="library-title"><span id="library-heading">현대시 모아보기</span> <small id="library-count">36</small></h2></div><button class="close-button" id="library-close" aria-label="작품 목록 닫기">×</button></div><label for="search">제목·작가·주제 검색</label><input id="search" type="search" placeholder="어떤 작품을 찾고 있나요?" autocomplete="off"><div id="library-list"></div></dialog>
+  <dialog id="wrong-list" aria-labelledby="wrong-list-title"><div class="dialog-top"><div><p class="eyebrow" id="wrong-list-category"></p><h2 id="wrong-list-title">틀린 문제 모아보기 <small id="wrong-list-total">0</small></h2></div><button id="wrong-list-close" class="close-button" aria-label="틀린 문제 목록 닫기">×</button></div><p class="wrong-list-note">작품을 펼치면 내 선택과 정답을 확인할 수 있어요. 다시 맞힌 작품은 목록에서 빠집니다.</p><div id="wrong-list-items"></div><div class="dialog-buttons"><button id="wrong-list-start" class="primary">오답만 풀기 →</button></div></dialog>
   <dialog id="body-dialog" aria-labelledby="body-title" aria-describedby="body-source">
     <div class="dialog-top"><div><p class="eyebrow" id="body-author"></p><h2 id="body-title"></h2></div><button id="body-close" class="close-button" aria-label="본문 닫고 문제로 돌아가기" autofocus>×</button></div>
     <p id="body-source" class="visually-hidden"></p>

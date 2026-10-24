@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {categories, getPoems, sourceLabel} from '../dist/catalog.js';
-import {initialState, nextQuestion, answer, changeMode, makeOptions, restoreState} from '../dist/engine.js';
+import {initialState, nextQuestion, answer, changeMode, changeCount, makeOptions, restoreState} from '../dist/engine.js';
 import {loadProgress, activateSection, saveProgress, storageKeys} from '../dist/progress.js';
 
 function memoryStorage() {
@@ -61,7 +61,7 @@ test('section switches and reloads preserve each question, choice count, stats, 
   const modernSnapshot=JSON.stringify(modern);
   activateSection(progress,'classical');
   const classical=progress.states.classical;
-  classical.count=5;classical.options=makeOptions(getPoems('classical').find(p=>p.id===classical.current),5);
+  changeCount(classical,5);
   const classicalSnapshot=JSON.stringify(classical);saveProgress(storage,progress);
   activateSection(progress,'modern');
   assert.equal(JSON.stringify(progress.states.modern),modernSnapshot);

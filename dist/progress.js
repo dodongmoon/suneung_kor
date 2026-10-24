@@ -1,5 +1,5 @@
 import {categories} from './catalog.js?v=suwan-1';
-import {initialState, nextQuestion, restoreState} from './engine.js?v=suwan-1';
+import {initialState, nextQuestion, restoreState} from './engine.js?v=sequence-1';
 
 export const storageKeys = {
   // Preserve the original storage key so existing modern-poetry records remain available.

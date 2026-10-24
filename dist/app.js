@@ -1,6 +1,6 @@
 import {books, genres, sections, categoryFor, sectionTitle, getPoems, sourceLabel} from './catalog.js?v=suwan-1';
-import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js?v=suwan-1';
-import {loadProgress, activateSection, saveProgress} from './progress.js?v=suwan-1';
+import {initialState, nextQuestion, previousQuestion, canGoPrevious, answer, changeMode, changeCount} from './engine.js?v=sequence-1';
+import {loadProgress, activateSection, saveProgress} from './progress.js?v=sequence-1';
 import {sourceDocument, sourcePageCount, sourceImages} from './sources.js?v=suwan-1';
 const $ = id => document.getElementById(id);
 let storage;
@@ -41,21 +41,25 @@ function render() {
   $('stat-rate').textContent = state.total ? `${Math.round(state.correct / state.total * 100)}%` : '—';
   $('stat-streak').textContent = state.streak;
   $('wrong-count').textContent = state.wrong.length;
+  $('wrong-list-count').textContent = state.wrong.length;
+  $('previous').disabled = !canGoPrevious(state);
+  $('empty-previous').hidden = !canGoPrevious(state);
+  $('body-open').disabled = state.current === null;
   $('mode-all').setAttribute('aria-pressed', String(state.mode === 'all'));
   $('mode-wrong').setAttribute('aria-pressed', String(state.mode === 'wrong'));
   document.querySelectorAll('[name="count"]').forEach(input => {
-    input.checked = Number(input.value) === state.count;
+    input.checked = Number(input.value) === (state.current ? state.options.length : state.count);
     // Finish reading the answer before generating a new set of choices.
     input.disabled = state.selected !== null;
   });
-  $('key-count').textContent = state.count;
+  $('key-count').textContent = state.current ? state.options.length : state.count;
   const roundIds = [...new Set([...state.seen, ...(state.current ? [state.current] : []), ...state.queue])];
   const total = state.mode === 'all' ? poems.length : roundIds.length;
   $('round-label').textContent = `${state.round || 1}번째 ${state.mode === 'all' ? '반복' : '복습'}`;
   $('round-progress').textContent = `${state.seen.length} / ${total}`;
   const dots = state.mode === 'all' ? poems.map(p => p.id) : roundIds;
   $('progress-dots').replaceChildren(...dots.map(id => element('span', '', state.seen.includes(id) ? 'done' : id === state.current ? 'current' : '')));
-  $('round-note').textContent = state.mode === 'all' ? `${poems.length}편을 한 번씩 풀면 다시 섞어서 이어집니다.` : '틀린 작품을 다시 맞히면 오답 목록에서 빠집니다.';
+  $('round-note').textContent = state.mode === 'all' ? `1번부터 ${poems.length}번까지 순서대로 풀고, 다시 1번부터 이어집니다.` : '틀린 작품을 번호순으로 풀어요. 다시 맞히면 오답 목록에서 빠집니다.';
   $('empty-state').hidden = state.current !== null;
   $('question-content').hidden = state.current === null;
   $('feedback').replaceChildren();
@@ -97,12 +101,19 @@ function next() {
   if (state.current) $('poem-title').focus({preventScroll:true});
   else $('back-all').focus({preventScroll:true});
 }
+function previous() {
+  if (!previousQuestion(state)) return;
+  render();
+  $('poem-title').focus({preventScroll:true});
+}
 function setMode(mode) {
   if (state.mode === mode) return;
   changeMode(state, mode); render();
   if (state.current) $('poem-title').focus({preventScroll:true});
 }
 $('next').addEventListener('click', next);
+$('previous').addEventListener('click', previous);
+$('empty-previous').addEventListener('click', previous);
 $('mode-all').addEventListener('click', () => setMode('all'));
 $('mode-wrong').addEventListener('click', () => setMode('wrong'));
 $('back-all').addEventListener('click', () => setMode('all'));
@@ -122,8 +133,7 @@ document.querySelectorAll('[name="section"]').forEach(input => input.addEventLis
   setSection(categoryFor(sections[progress.active].book, input.value));
 }));
 document.querySelectorAll('[name="count"]').forEach(input => input.addEventListener('change', () => {
-  state.count = Number(input.value);
-  if (state.current) state.options = makeOptions(poems.find(p => p.id === state.current), state.count);
+  changeCount(state, Number(input.value));
   render();
 }));
 document.addEventListener('keydown', event => {
@@ -150,9 +160,37 @@ function renderLibrary() {
 $('library-open').addEventListener('click', () => {renderLibrary(); $('library').showModal();});
 $('library-close').addEventListener('click', () => $('library').close());
 $('search').addEventListener('input', renderLibrary);
-$('body-open').addEventListener('click', () => {
-  const poem = poems.find(p => p.id === state.current);
+function renderWrongList() {
+  $('wrong-list-category').textContent = sectionTitle(progress.active);
+  $('wrong-list-total').textContent = state.wrong.length;
+  $('wrong-list-start').disabled = state.wrong.length === 0;
+  const items = poems.filter(p => state.wrong.includes(p.id)).sort((a,b)=>a.id-b.id).map(p => {
+    const details = element('details', '', 'library-item wrong-item');
+    const summary = element('summary', '');
+    summary.append(element('span', `${String(p.id).padStart(2,'0')} · ${p.author} `), document.createTextNode(p.title));
+    const content = element('div', '', 'wrong-answer');
+    if (state.wrongAnswers[p.id]) content.append(element('p', `내 선택 · ${state.wrongAnswers[p.id]}`, 'wrong-choice'));
+    content.append(element('p', `정답 · ${p.theme}`, 'right-choice'), element('small', sourceLabel(p)));
+    const body = element('button', '본문 보기', 'body-button');
+    body.setAttribute('aria-label', `${p.title} 본문 보기`);
+    body.addEventListener('click', () => openBody(p));
+    content.append(body);
+    details.append(summary, content);
+    return details;
+  });
+  $('wrong-list-items').replaceChildren(...(items.length ? items : [element('p', '아직 틀린 문제가 없어요. 틀리면 이곳에 자동으로 모입니다.', 'page-notice')]));
+}
+$('wrong-list-open').addEventListener('click', () => {renderWrongList(); $('wrong-list').showModal();});
+$('wrong-list-close').addEventListener('click', () => $('wrong-list').close());
+$('wrong-list-start').addEventListener('click', () => {
+  $('wrong-list').close();
+  setMode('wrong');
+  if (state.current) $('poem-title').focus({preventScroll:true});
+});
+let bodyReturnFocus;
+function openBody(poem) {
   if (!poem) return;
+  bodyReturnFocus = document.activeElement;
   $('body-title').textContent = poem.title;
   $('body-author').textContent = poem.author;
   $('body-source').textContent = `이 작품만 ${sourcePageCount(poem)}쪽 · 원본 출처: ${sourceLabel(poem)}`;
@@ -194,12 +232,13 @@ $('body-open').addEventListener('click', () => {
   $('body-viewer').replaceChildren(...pages);
   $('body-dialog').showModal();
   $('body-viewer').scrollTo(0, 0);
-});
+}
+$('body-open').addEventListener('click', () => openBody(poems.find(p => p.id === state.current)));
 $('body-close').addEventListener('click', () => $('body-dialog').close());
 $('body-dialog').addEventListener('close', () => {
   // Release the page images without changing the question, choices, or score.
   $('body-viewer').replaceChildren();
-  $('body-open').focus({preventScroll:true});
+  if (bodyReturnFocus?.isConnected) bodyReturnFocus.focus({preventScroll:true});
 });
 $('reset-open').addEventListener('click', () => $('reset-dialog').showModal());
 $('reset-cancel').addEventListener('click', () => $('reset-dialog').close());

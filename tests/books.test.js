@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {categories, categoryFor, getPoems, sectionTitle, sourceLabel} from '../dist/catalog.js';
-import {initialState, nextQuestion, answer, changeMode, makeOptions, restoreState} from '../dist/engine.js';
+import {initialState, nextQuestion, answer, changeMode, changeCount, restoreState} from '../dist/engine.js';
 import {loadProgress, activateSection, saveProgress, storageKeys} from '../dist/progress.js';
 import {sourcePageCount} from '../dist/sources.js';
 
@@ -46,8 +46,7 @@ test('four independent saves survive switching, reload and a single-section rese
   const progress=loadProgress(storage);const snapshots={};
   for(const [i,category] of categories.entries()) {
     activateSection(progress,category);const state=progress.states[category];
-    state.count=i%2 ? 5 : 3;
-    state.options=makeOptions(getPoems(category).find(p=>p.id===state.current),state.count);
+    changeCount(state,i%2 ? 5 : 3);
     answer(state,0);saveProgress(storage,progress);snapshots[category]=JSON.stringify(state);
   }
   assert.equal(new Set(Object.values(storageKeys)).size,4);
