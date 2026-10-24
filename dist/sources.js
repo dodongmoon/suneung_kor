@@ -1,3 +1,4 @@
+import {pageImages} from './page-images.js';
 // Each file contains only this work, including its continuation and notes pages.
 const pageCounts = {
   "modern": [
@@ -84,4 +85,12 @@ export function sourcePageCount(poem) {
 export function sourceDocument(poem) {
   sourcePageCount(poem);
   return `./pdfs/works/${poem.category}-${String(poem.id).padStart(2, '0')}.pdf#page=1&view=FitH`;
+}
+
+export function sourceImages(poem) {
+  sourcePageCount(poem);
+  const key = `${poem.category}-${String(poem.id).padStart(2, '0')}`;
+  return pageImages[key].map((size, index) => ({
+    ...size, src: `./pages/${key}-${index + 1}.webp`,
+  }));
 }

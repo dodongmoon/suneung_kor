@@ -7,8 +7,8 @@
   <meta name="description" content="작가와 제목을 보고 주제를 떠올려 보세요. 2027 수특 현대시·고전시가를 섹션별 3지선다와 5지선다로 반복 학습합니다.">
   <title>시의 주제 · 2027 수특 현대시·고전시가</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ae4b32'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' fill='white'%3E시%3C/text%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css?v=20261024-pdf">
-  <script type="module" src="./app.js?v=20261024-works"></script>
+  <link rel="stylesheet" href="./style.css?v=20261024-pages">
+  <script type="module" src="./app.js?v=20261024-pages"></script>
 </head>
 <body>
   <a class="skip" href="#study">문제로 바로 가기</a>
@@ -57,9 +57,8 @@
   <dialog id="library" aria-labelledby="library-title"><div class="dialog-top"><div><p class="eyebrow">나만의 작은 작품 목록</p><h2 id="library-title"><span id="library-heading">현대시 모아보기</span> <small id="library-count">36</small></h2></div><button class="close-button" id="library-close" aria-label="작품 목록 닫기">×</button></div><label for="search">제목·작가·주제 검색</label><input id="search" type="search" placeholder="어떤 작품을 찾고 있나요?" autocomplete="off"><div id="library-list"></div></dialog>
   <dialog id="body-dialog" aria-labelledby="body-title" aria-describedby="body-source">
     <div class="dialog-top"><div><p class="eyebrow" id="body-author"></p><h2 id="body-title"></h2></div><button id="body-close" class="close-button" aria-label="본문 닫고 문제로 돌아가기" autofocus>×</button></div>
-    <div class="body-document-bar"><p id="body-source"></p><a id="body-external" class="body-button" target="_blank" rel="noopener">새 탭에서 열기 <span aria-hidden="true">↗</span></a></div>
-    <p class="body-help">이 작품에 해당하는 페이지만 모았어요. PDF가 보이지 않으면 새 탭에서 열어 주세요.</p>
-    <div id="body-viewer"></div>
+    <p id="body-source" class="visually-hidden"></p>
+    <div id="body-viewer" tabindex="0" role="region" aria-label="작품 본문 · 페이지를 누르면 확대하거나 축소할 수 있어요"></div>
   </dialog>
   <dialog id="reset-dialog" aria-labelledby="reset-title"><h2 id="reset-title">현대시 기록을 초기화할까요?</h2><p id="reset-description">현대시의 풀이 수, 정답률, 오답 목록과 반복 진도만 초기화됩니다.</p><div class="dialog-buttons"><button id="reset-cancel" class="text-button" autofocus>취소</button><button id="reset-confirm" class="primary">초기화하기</button></div></dialog>
   <noscript>퀴즈를 풀려면 브라우저에서 JavaScript를 켜 주세요.</noscript>

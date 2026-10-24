@@ -1,7 +1,7 @@
 import {categories, sections, getPoems, sourceLabel} from './catalog.js';
 import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js';
 import {loadProgress, activateSection, saveProgress} from './progress.js';
-import {sourceDocument, sourcePageCount} from './sources.js?v=works-1';
+import {sourceDocument, sourcePageCount, sourceImages} from './sources.js?v=pages-1';
 const $ = id => document.getElementById(id);
 let storage;
 try {storage = window.localStorage;} catch {}
@@ -146,20 +146,49 @@ $('body-open').addEventListener('click', () => {
   $('body-title').textContent = poem.title;
   $('body-author').textContent = poem.author;
   $('body-source').textContent = `이 작품만 ${sourcePageCount(poem)}쪽 · 원본 출처: ${sourceLabel(poem)}`;
-  const url = sourceDocument(poem);
-  $('body-external').href = url;
-  // No iframe or PDF request exists until the reader explicitly opens it.
-  const frame = document.createElement('iframe');
-  frame.title = `${poem.author} · ${poem.title} 손필기 PDF`;
-  frame.src = url;
-  $('body-viewer').replaceChildren(frame);
+  // Create page images only on demand; no browser PDF toolbar or sidebar.
+  const pages = sourceImages(poem).map((page, index) => {
+    const sheet = element('button', '', 'page-sheet');
+    sheet.type = 'button';
+    sheet.setAttribute('aria-label', `${poem.title} ${index + 1}쪽 확대`);
+    sheet.setAttribute('aria-pressed', 'false');
+    sheet.title = '페이지를 눌러 확대·축소';
+    const img = document.createElement('img');
+    img.alt = `${poem.author} · ${poem.title} 본문과 필기, ${index + 1}쪽`;
+    img.width = page.width;
+    img.height = page.height;
+    img.decoding = 'async';
+    img.loading = index === 0 ? 'eager' : 'lazy';
+    const notice = element('p', `${index + 1}쪽을 불러오는 중이에요.`, 'page-notice');
+    img.addEventListener('load', () => notice.remove(), {once:true});
+    img.addEventListener('error', () => {
+      sheet.hidden = true;
+      notice.textContent = '페이지를 불러오지 못했어요. ';
+      const link = element('a', '원본 PDF 열기');
+      link.href = sourceDocument(poem);
+      link.target = '_blank';
+      link.rel = 'noopener';
+      notice.append(link);
+    }, {once:true});
+    sheet.addEventListener('click', () => {
+      const zoomed = sheet.classList.toggle('is-zoomed');
+      sheet.setAttribute('aria-pressed', String(zoomed));
+      sheet.setAttribute('aria-label', `${poem.title} ${index + 1}쪽 ${zoomed ? '축소' : '확대'}`);
+    });
+    sheet.append(img);
+    img.src = page.src;
+    const wrapper = element('div', '', 'page-wrapper');
+    wrapper.append(notice, sheet);
+    return wrapper;
+  });
+  $('body-viewer').replaceChildren(...pages);
   $('body-dialog').showModal();
+  $('body-viewer').scrollTo(0, 0);
 });
 $('body-close').addEventListener('click', () => $('body-dialog').close());
 $('body-dialog').addEventListener('close', () => {
-  // Release the PDF viewer without changing the question, choices, or score.
+  // Release the page images without changing the question, choices, or score.
   $('body-viewer').replaceChildren();
-  $('body-external').removeAttribute('href');
   $('body-open').focus({preventScroll:true});
 });
 $('reset-open').addEventListener('click', () => $('reset-dialog').showModal());

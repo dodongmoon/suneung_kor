@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {categories, getPoems} from '../dist/catalog.js';
-import {sourceDocument, sourcePageCount} from '../dist/sources.js';
+import {sourceDocument, sourcePageCount, sourceImages} from '../dist/sources.js';
 
 test('every work opens its own existing PDF from page one', () => {
   const urls = new Set();
@@ -21,4 +21,24 @@ test('every work opens its own existing PDF from page one', () => {
   const classical = getPoems('classical');
   assert.equal(sourcePageCount(classical.find(p => p.title === '성패관천운')), 1);
   assert.equal(sourcePageCount(classical.find(p => p.title === '면앙정가')), 3);
+});
+
+test('every work has a complete set of separate page images', () => {
+  const paths = new Set();
+  for (const category of categories) {
+    for (const poem of getPoems(category)) {
+      const images = sourceImages(poem);
+      assert.equal(images.length, sourcePageCount(poem));
+      for (const page of images) {
+        assert.ok(!paths.has(page.src));
+        paths.add(page.src);
+        assert.equal(page.width, 1600);
+        assert.ok(page.height > page.width);
+        const data = readFileSync(new URL(`../dist/${page.src}`, import.meta.url));
+        assert.equal(data.subarray(0,4).toString(), 'RIFF');
+        assert.equal(data.subarray(8,12).toString(), 'WEBP');
+      }
+    }
+  }
+  assert.equal(paths.size, 113);
 });
