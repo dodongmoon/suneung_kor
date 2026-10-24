@@ -1,6 +1,7 @@
 import {categories, sections, getPoems, sourceLabel} from './catalog.js';
 import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js';
 import {loadProgress, activateSection, saveProgress} from './progress.js';
+import {sourceDocument} from './sources.js';
 const $ = id => document.getElementById(id);
 let storage;
 try {storage = window.localStorage;} catch {}
@@ -139,6 +140,28 @@ function renderLibrary() {
 $('library-open').addEventListener('click', () => {renderLibrary(); $('library').showModal();});
 $('library-close').addEventListener('click', () => $('library').close());
 $('search').addEventListener('input', renderLibrary);
+$('body-open').addEventListener('click', () => {
+  const poem = poems.find(p => p.id === state.current);
+  if (!poem) return;
+  $('body-title').textContent = poem.title;
+  $('body-author').textContent = poem.author;
+  $('body-source').textContent = sourceLabel(poem);
+  const url = sourceDocument(poem);
+  $('body-external').href = url;
+  // No iframe or PDF request exists until the reader explicitly opens it.
+  const frame = document.createElement('iframe');
+  frame.title = `${poem.author} · ${poem.title} 손필기 PDF`;
+  frame.src = url;
+  $('body-viewer').replaceChildren(frame);
+  $('body-dialog').showModal();
+});
+$('body-close').addEventListener('click', () => $('body-dialog').close());
+$('body-dialog').addEventListener('close', () => {
+  // Release the PDF viewer without changing the question, choices, or score.
+  $('body-viewer').replaceChildren();
+  $('body-external').removeAttribute('href');
+  $('body-open').focus({preventScroll:true});
+});
 $('reset-open').addEventListener('click', () => $('reset-dialog').showModal());
 $('reset-cancel').addEventListener('click', () => $('reset-dialog').close());
 $('reset-confirm').addEventListener('click', () => {
