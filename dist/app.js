@@ -1,7 +1,7 @@
 import {categories, sections, getPoems, sourceLabel} from './catalog.js';
 import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js';
 import {loadProgress, activateSection, saveProgress} from './progress.js';
-import {sourceDocument} from './sources.js';
+import {sourceDocument, sourcePageCount} from './sources.js?v=works-1';
 const $ = id => document.getElementById(id);
 let storage;
 try {storage = window.localStorage;} catch {}
@@ -145,7 +145,7 @@ $('body-open').addEventListener('click', () => {
   if (!poem) return;
   $('body-title').textContent = poem.title;
   $('body-author').textContent = poem.author;
-  $('body-source').textContent = sourceLabel(poem);
+  $('body-source').textContent = `이 작품만 ${sourcePageCount(poem)}쪽 · 원본 출처: ${sourceLabel(poem)}`;
   const url = sourceDocument(poem);
   $('body-external').href = url;
   // No iframe or PDF request exists until the reader explicitly opens it.
