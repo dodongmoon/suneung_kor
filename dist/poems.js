@@ -38,4 +38,4 @@ const entries = [
   [35, '박목월', '산이 날 에워싸고', '자연의 순리를 따르는 삶에 대한 소망과 지향', '32-36', 4],
   [36, '문정희', '흐름에 대하여', '흘러가는 삶이 지닌 죽음이라는 숙명적 한계와 그로 인한 슬픔', '32-36', 5],
 ];
-export const poems = entries.map(([id, author, title, theme, sourceRange, sourcePage]) => ({id, author, title, theme, sourceRange, sourcePage}));
+export const poems = entries.map(([id, author, title, theme, sourceRange, sourcePage]) => ({id, author, title, theme, sourceRange, sourcePage, category: 'modern'}));

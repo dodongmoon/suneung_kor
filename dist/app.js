@@ -1,12 +1,15 @@
-import {poems} from './poems.js';
-import {initialState, nextQuestion, answer, changeMode, makeOptions, restoreState} from './engine.js';
+import {categories, sections, getPoems, sourceLabel} from './catalog.js';
+import {initialState, nextQuestion, answer, changeMode, makeOptions} from './engine.js';
+import {loadProgress, activateSection, saveProgress} from './progress.js';
 const $ = id => document.getElementById(id);
-const storageKey = 'sutek-poem-loop-v1';
-let state;
-try {state = restoreState(localStorage.getItem(storageKey));} catch {state = initialState();}
-if (state.current === null) nextQuestion(state);
+let storage;
+try {storage = window.localStorage;} catch {}
+const progress = loadProgress(storage);
+activateSection(progress, progress.active);
+let state = progress.states[progress.active];
+let poems = getPoems(progress.active);
 function save() {
-  try {localStorage.setItem(storageKey, JSON.stringify(state));}
+  try {saveProgress(storage, progress);}
   catch {$('save-status').textContent = '이 브라우저에서는 기록 저장이 어려워요. 현재 창에서는 계속 학습할 수 있어요.';}
 }
 function element(tag, text, className) {
@@ -15,6 +18,20 @@ function element(tag, text, className) {
   return el;
 }
 function render() {
+  const label = sections[progress.active].label;
+  document.documentElement.dataset.category = progress.active;
+  document.title = `시의 주제 · 2027 수특 ${label}`;
+  $('intro-category').textContent = `매일 조금씩, ${label} ${poems.length}편`;
+  $('stats-category').textContent = `${label} 학습 기록`;
+  $('footer-source').textContent = `2027 KBS 수특 ${label} 손필기 · ${poems.length}편`;
+  $('library-heading').textContent = `${label} 모아보기`;
+  $('library-count').textContent = poems.length;
+  $('reset-title').textContent = `${label} 기록을 초기화할까요?`;
+  $('reset-description').textContent = `${label}의 풀이 수, 정답률, 오답 목록과 반복 진도만 초기화됩니다.`;
+  for (const category of categories) {
+    $(`section-${category}`).checked = category === progress.active;
+    $(`section-${category}-count`).textContent = `${getPoems(category).length}편`;
+  }
   $('stat-total').textContent = state.total.toLocaleString();
   $('stat-rate').textContent = state.total ? `${Math.round(state.correct / state.total * 100)}%` : '—';
   $('stat-streak').textContent = state.streak;
@@ -33,7 +50,7 @@ function render() {
   $('round-progress').textContent = `${state.seen.length} / ${total}`;
   const dots = state.mode === 'all' ? poems.map(p => p.id) : roundIds;
   $('progress-dots').replaceChildren(...dots.map(id => element('span', '', state.seen.includes(id) ? 'done' : id === state.current ? 'current' : '')));
-  $('round-note').textContent = state.mode === 'all' ? '36편을 한 번씩 풀면 다시 섞어서 이어집니다.' : '틀린 작품을 다시 맞히면 오답 목록에서 빠집니다.';
+  $('round-note').textContent = state.mode === 'all' ? `${poems.length}편을 한 번씩 풀면 다시 섞어서 이어집니다.` : '틀린 작품을 다시 맞히면 오답 목록에서 빠집니다.';
   $('empty-state').hidden = state.current !== null;
   $('question-content').hidden = state.current === null;
   $('feedback').replaceChildren();
@@ -59,7 +76,8 @@ function render() {
   if (answered) {
     const correct = state.options[state.selected] === poem.theme;
     $('feedback').classList.toggle('is-wrong', !correct);
-    $('feedback').append(element('strong', correct ? '정답이에요. 한 편 더 기억했어요!' : '괜찮아요. 이 주제를 기억해 두세요.'), element('span', poem.theme), element('span', `출처 · 현대시 ${poem.sourceRange} 손필기, PDF ${poem.sourcePage}쪽`, 'source'));
+    $('feedback').append(element('strong', correct ? '정답이에요. 한 편 더 기억했어요!' : '괜찮아요. 이 주제를 기억해 두세요.'), element('span', poem.theme), element('span', `출처 · ${sourceLabel(poem)}`, 'source'));
+    if (poem.themeNote) $('feedback').append(element('span', poem.themeNote, 'source'));
   }
   save();
 }
@@ -83,6 +101,15 @@ $('next').addEventListener('click', next);
 $('mode-all').addEventListener('click', () => setMode('all'));
 $('mode-wrong').addEventListener('click', () => setMode('wrong'));
 $('back-all').addEventListener('click', () => setMode('all'));
+document.querySelectorAll('[name="section"]').forEach(input => input.addEventListener('change', () => {
+  save();
+  activateSection(progress, input.value);
+  state = progress.states[progress.active];
+  poems = getPoems(progress.active);
+  $('search').value = '';
+  render();
+  $('section-status').textContent = `${sections[progress.active].label} ${poems.length}편으로 전환했습니다. 문제와 선지는 이 섹션에서만 나옵니다.`;
+}));
 document.querySelectorAll('[name="count"]').forEach(input => input.addEventListener('change', () => {
   state.count = Number(input.value);
   if (state.current) state.options = makeOptions(poems.find(p => p.id === state.current), state.count);
@@ -100,9 +127,10 @@ function renderLibrary() {
   const items = filtered.map(p => {
     const details = element('details', '', 'library-item');
     const summary = element('summary', '');
-    summary.append(element('span', `${String(p.id).padStart(2,'0')} · ${p.author}`), document.createTextNode(p.title));
+    summary.append(element('span', `${String(p.id).padStart(2,'0')} · ${p.author} `), document.createTextNode(p.title));
     const theme = element('p', p.theme);
-    theme.append(element('small', `현대시 ${p.sourceRange} 손필기 · PDF ${p.sourcePage}쪽`));
+    theme.append(element('small', sourceLabel(p)));
+    if (p.themeNote) theme.append(element('small', p.themeNote));
     details.append(summary, theme);
     return details;
   });
@@ -114,7 +142,10 @@ $('search').addEventListener('input', renderLibrary);
 $('reset-open').addEventListener('click', () => $('reset-dialog').showModal());
 $('reset-cancel').addEventListener('click', () => $('reset-dialog').close());
 $('reset-confirm').addEventListener('click', () => {
-  const count = state.count; state = initialState(); state.count = count; nextQuestion(state); render(); $('reset-dialog').close();
+  const count = state.count;
+  state = initialState(progress.active); state.count = count;
+  progress.states[progress.active] = state;
+  nextQuestion(state); render(); $('reset-dialog').close();
 });
 // Mobile keeps the learning card compact; offer the same reset action in the footer.
 const mobileReset = element('button', '학습 기록 초기화', 'mobile-reset reset-link');
